@@ -1,0 +1,20 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Apr 16, 2024, 12:53:11 PM
+    Author     : Abidine
+*/
+
+.hover-label:hover {
+    -fx-text-fill: #FFFF00; /* Change text color on hover */
+}
+.hover-label {
+    -fx-text-fill: black;
+}
+
+.used-label{
+    -fx-text-fill: yellow;
+}

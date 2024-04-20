@@ -1,0 +1,13 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\Abidine\\Downloads\\postgresql-42.7.3.jar",
+        "c:\\Users\\Abidine\\Desktop\\JavaFX\\zxing_jars\\core-3.4.1.jar",
+        "c:\\Users\\Abidine\\Desktop\\JavaFX\\zxing_jars\\javase-3.4.1.jar",
+        "c:\\Users\\Abidine\\Downloads\\docx4j-community-8.3.10\\docx4j-core-8.3.10.jar",
+        "c:\\Users\\Abidine\\Downloads\\docx4j-community-8.3.10\\docx4j-JAXB-Internal-8.3.10.jar",
+        "c:\\Users\\Abidine\\Downloads\\docx4j-community-8.3.10\\docx4j-openxml-objects-8.3.10.jar",
+        "c:\\Users\\Abidine\\Downloads\\docx4j-community-8.3.10\\docx4j-openxml-objects-pml-8.3.10.jar",
+        "c:\\Users\\Abidine\\Downloads\\docx4j-community-8.3.10\\docx4j-openxml-objects-sml-8.3.10.jar"
+    ]
+}

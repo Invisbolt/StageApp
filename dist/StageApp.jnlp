@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="StageApp.jnlp">
+  <information>
+    <title>StageApp</title>
+    <vendor>Abidine</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="StageApp.jar" size="437236" download="eager" />
+    <jar href="lib\core-3.4.1.jar" size="539286" download="eager" />
+    <jar href="lib\javase-3.4.1.jar" size="36840" download="eager" />
+    <jar href="lib\mariadb-java-client-2.7.12.jar" size="627652" download="eager" />
+    <jar href="lib\openpdf-1.3.41-javadoc.jar" size="3204958" download="eager" />
+    <jar href="lib\openpdf-1.3.41.jar" size="2138057" download="eager" />
+    <jar href="lib\postgresql-42.7.3.jar" size="1089312" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="StageApp" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="LoginPage.LoginPage"  name="StageApp" />
+  <update check="always"/>
+</jnlp>
