@@ -10,6 +10,8 @@ import Architecture.BonService;
 import Architecture.Employe;
 import Architecture.Service;
 import Architecture.User;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -28,13 +30,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -63,9 +68,8 @@ public class FXMLDocumentController implements Initializable {
     private TableView<Bon> bonTableView;
     @FXML
     private TextField empNumField;
-    
     @FXML
-    private Button createButton;
+    private TextArea motifText;
 
     @FXML
     private Label acclabel;
@@ -75,6 +79,9 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private Label enlabel;
+
+    @FXML
+    private Button confirmationButton;
 
     @FXML
     private AnchorPane sorPan;
@@ -106,7 +113,7 @@ public class FXMLDocumentController implements Initializable {
     }
 
     @FXML
-    private void handleExitClick(MouseEvent e) {
+    private void handleExitClick(MouseEvent e) throws IOException, URISyntaxException {
         Stage stage = (Stage) acclabel.getScene().getWindow();
         stage.close();
         Platform.exit();
@@ -150,8 +157,51 @@ public class FXMLDocumentController implements Initializable {
         System.out.println("Bon Entrée label clicked!");
     }
 
+    @FXML
+    private void handleConfirmationClick(ActionEvent event) throws IOException, URISyntaxException {
+        System.out.println("TEST");
+        Employe emp = cBox.getValue();
+        String cBoxTValue = cBoxT.getValue(); // Store the value to avoid multiple calls
+        System.out.println(emp + "  " + cBoxTValue);
+        // Check if cBox and cBoxT are not null
+        if (emp != null && cBoxTValue != null) {
+            if (cBoxTValue.equals("Bon Entrée")) {
+                String type = "E";
+                char etatbon = 'V';
+                Bon bon = new Bon(BonService.getNextCodeBon(), emp, type, LocalDate.now(), LocalTime.now(), LocalTime.now(), motifText.getText(), etatbon);
+                // Add code to use bon as needed
+                BonService.saveBon(bon, emp);
+
+            } else if (cBoxTValue.equals("Bon Sortie")) {
+                String type = "S";
+                char etatbon = 'N';
+                Bon bon = new Bon(BonService.getNextCodeBon(), emp, type, LocalDate.now(), LocalTime.now(), null, motifText.getText(), etatbon);
+
+                // Add code to use bon as needed
+                BonService.saveBon(bon, emp);
+            } else {
+                JOptionPane.showMessageDialog(null, "Choix De bon n'est pas valide");
+            }
+        } else {
+            // Handle the case where emp, cBox, or cBoxT is null
+            JOptionPane.showMessageDialog(null, "Les champs ne doivent pas être nuls.");
+        }
+        empNumField.setText("");
+        motifText.setText("");
+
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        confirmationButton.setOnAction((event) -> {
+            try {
+                this.handleConfirmationClick(event);
+            } catch (IOException ex) {
+                Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (URISyntaxException ex) {
+                Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         Connectdb();
         cBox.setOnAction(event -> {
             // Code to execute when the ComboBox selection changes
@@ -187,7 +237,6 @@ public class FXMLDocumentController implements Initializable {
         bonTableView.getColumns().addAll(codeBonColumn, employeColumn, typeBonColumn,
                 dateBonColumn, heureBonColumn, heureVColumn, motifColumn, etatBonColumn);
 
-
         // TODO
         accPan.setVisible(true);
         accPan.setDisable(false);
@@ -218,7 +267,7 @@ public class FXMLDocumentController implements Initializable {
             con = getConnection();
             Statement statement = con.createStatement();
             Employe chef = Employe.getEmploye(user_app.getCodeEmploye());
-            Service sr=Service.getService(chef.getService_e(),chef);
+            Service sr = Service.getService(chef.getService_e(), chef);
             System.out.println(chef.getService_e());
             cBox.getItems().setAll(Service.getEmployes(statement, sr));
             bonTableView.getItems().clear();
@@ -236,10 +285,9 @@ public class FXMLDocumentController implements Initializable {
         }
     }
 
-    public static void initData(User user){
-        user_app=user;
+    public static void initData(User user) {
+        user_app = user;
 
     }
-
 
 }

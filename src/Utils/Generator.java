@@ -5,17 +5,17 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.EAN13Writer;
+import res.R;
 
 public class Generator {
 
-    public static void generateAndSaveEAN13(String ean13Number, String filePath) throws WriterException, IOException {
+    public static void generateAndSaveEAN13(String ean13Number, String fileName) throws WriterException, IOException {
         if (ean13Number.length() != 13) {
             throw new IllegalArgumentException("EAN-13 number must be 13 digits long");
         }
@@ -40,21 +40,19 @@ public class Generator {
         }
 
         graphics.dispose();
-
-        // Save as PNG
-        ImageIO.write(image, "png", new File(filePath));
+        String s=R.BASE_DIR+File.separator+"barcode.png";
+        File file=new File(s);
+        ImageIO.write(image, "png", file);
     }
 
     public static void main(String[] args) {
         String ean13Number = "0000000000024";
-        String filePath = "barcode.png"; // Replace with your desired path
-
+        String fileName = "barcode.png"; // Name of the file
         try {
-            generateAndSaveEAN13(ean13Number, filePath);
+            generateAndSaveEAN13(ean13Number, fileName);
             System.out.println("EAN-13 barcode saved successfully!");
         } catch (WriterException | IOException e) {
             e.printStackTrace();
         }
-
     }
 }

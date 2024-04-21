@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="StageApp.jar" size="437236" download="eager" />
+    <jar href="StageApp.jar" size="268702" download="eager" />
     <jar href="lib\core-3.4.1.jar" size="539286" download="eager" />
     <jar href="lib\javase-3.4.1.jar" size="36840" download="eager" />
     <jar href="lib\mariadb-java-client-2.7.12.jar" size="627652" download="eager" />

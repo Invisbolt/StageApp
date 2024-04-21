@@ -13,7 +13,7 @@ import java.time.LocalTime;
  * @author Abidine
  */
 public class Bon {
-    private int codeBon;
+    private Integer codeBon;
     private Employe employe;
     private String type_bon;
     private LocalDate dateBon;
