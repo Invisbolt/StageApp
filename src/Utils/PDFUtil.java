@@ -17,33 +17,36 @@ import java.util.HashMap;
 import java.util.Map;
 import Architecture.Employe;
 import Architecture.Bon;
+import com.google.zxing.WriterException;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfFormField;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import res.R;
 
 public class PDFUtil {
 
-    public static void makePDF(Employe e, Bon b, String imagePath, InputStream boninput) throws URISyntaxException {
+    public static void makePDF(Employe e, Bon b, String imagePath, InputStream boninput) throws URISyntaxException, WriterException, IOException {
         // Replace these values with your actual data
         Map<String, String> data = new HashMap<>();
-        String code_m = String.format("%012d", b.getCodeBon());
-        data.put("Numero", code_m.substring(0, code_m.length() - 1));
+        String code_m = String.format("%012d",b.getCodeBon()).replace(' ','0');
+        System.out.println(code_m);
+        Generator.generateAndSaveEAN13(CalculatorCheck.fullDigit(code_m), imagePath);
+        data.put("Numéro", code_m);
+        data.put("Numero", code_m);
         data.put("Date", String.valueOf(b.getDateBon()));
         data.put("Heure", String.valueOf(b.getHeureBon()));
         data.put("Nom", e.getNom());
         data.put("Prenom", e.getPrenom());
         data.put("Motif", b.getMotif());
-
         try {
             // Load existing PDF
             PdfReader reader = new PdfReader(boninput);
@@ -98,30 +101,37 @@ public class PDFUtil {
             outputStream.close();
 
             System.out.println("PDF modified successfully.");
+            String sti=outputDir+File.separator+"output.pdf";
+            Desktop.getDesktop().open(new File(outputDir+File.separator+"output.pdf"));
         } catch (IOException | DocumentException ex) {
             ex.printStackTrace();
         }
     }
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        // Create an instance of Employe
-        Employe employe = new Employe(1, "John", "Doe", LocalDate.MIN, 0);
-
-        // Create an instance of Bon
-        Bon bon = new Bon(25, employe, "S", LocalDate.MIN, LocalTime.NOON, LocalTime.MIN, "Familial issues", 'V');
-
-        // Call the makePDF method from PDFUtil
-        makePDF(employe, bon, R.BARCODE_DIR, R.bonSStream());
-        Desktop.getDesktop().open(new File(R.BASE_DIR + File.separator + "output.pdf"));
+        try {
+            // Create an instance of Employe
+            Employe employe = new Employe(1, "John", "Doe", LocalDate.now(), 0);
+            
+            // Create an instance of Bon
+            Bon bon = new Bon(25, employe, "S", LocalDate.MIN, LocalTime.NOON, LocalTime.MIN, "Familial issues", 'V');
+            
+            // Call the makePDF method from PDFUtil
+            makePDF(employe, bon, R.BARCODE_DIR, R.bonSStream());
+        } catch (WriterException ex) {
+            Logger.getLogger(PDFUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public static void main(Bon bon, Employe emp) throws IOException, URISyntaxException {
-        System.out.println(String.valueOf(bon.getCodeBon()));
-        String fullnum = CalculatorCheck.fullDigit(String.valueOf(bon.getCodeBon()));
-        System.out.println(fullnum);
-        bon.setCodeBon(Integer.valueOf(fullnum));
-        makePDF(emp, bon, R.BARCODE_DIR, R.bonSStream());
-        Desktop.getDesktop().open(new File(R.BASE_DIR + File.separator + "output.pdf"));
+        try {
+            
+            if(bon.getType_bon().equals("E"))makePDF(emp, bon, R.BARCODE_DIR, R.bonEntre());
+            else makePDF(emp, bon, R.BARCODE_DIR, R.bonSStream());
+            
+        } catch (WriterException ex) {
+            Logger.getLogger(PDFUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

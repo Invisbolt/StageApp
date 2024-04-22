@@ -10,6 +10,7 @@ import Architecture.BonService;
 import Architecture.Employe;
 import Architecture.Service;
 import Architecture.User;
+import Utils.CalculatorCheck;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -20,9 +21,11 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -171,6 +174,7 @@ public class FXMLDocumentController implements Initializable {
                 Bon bon = new Bon(BonService.getNextCodeBon(), emp, type, LocalDate.now(), LocalTime.now(), LocalTime.now(), motifText.getText(), etatbon);
                 // Add code to use bon as needed
                 BonService.saveBon(bon, emp);
+                BonService.pointageValidate(CalculatorCheck.fullDigit(String.valueOf(bon.getCodeBon())));
 
             } else if (cBoxTValue.equals("Bon Sortie")) {
                 String type = "S";
@@ -208,6 +212,9 @@ public class FXMLDocumentController implements Initializable {
             Employe selectedItem = cBox.getSelectionModel().getSelectedItem();
             empNumField.setText(String.valueOf(selectedItem.getCodeEmploye()));
             empNumField.setEditable(false);
+        });
+        cBoxB.setOnAction(e -> {
+            filterBonsBySelectedOption();
         });
 
         TableColumn<Bon, Integer> codeBonColumn = new TableColumn<>("Code Bon");
@@ -253,6 +260,7 @@ public class FXMLDocumentController implements Initializable {
         blist.add("Mensuel");
         blist.add("Semaine");
         cBoxB.getItems().setAll(blist);
+
         try {
             con = getConnection();
             Statement st = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -272,6 +280,7 @@ public class FXMLDocumentController implements Initializable {
             cBox.getItems().setAll(Service.getEmployes(statement, sr));
             bonTableView.getItems().clear();
             bonTableView.getItems().addAll(BonService.getBonsByEmployees(cBox.getItems()));
+            originalBons = bonTableView.getItems();
             System.out.println(cBox.getItems());
         } catch (Exception ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR); // Change to ERROR type for exceptions
@@ -288,6 +297,45 @@ public class FXMLDocumentController implements Initializable {
     public static void initData(User user) {
         user_app = user;
 
+    }
+
+    private List<Bon> originalBons = new ArrayList<>();
+
+    private void filterBonsBySelectedOption() {
+        String selectedOption = cBoxB.getValue();
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+
+        switch (selectedOption) {
+            case "Annuel":
+                startDate = currentDate.minusYears(1);
+                endDate = currentDate;
+                break;
+            case "Mensuel":
+                startDate = currentDate.minusMonths(1);
+                endDate = currentDate;
+                break;
+            case "Semaine":
+                startDate = currentDate.minusWeeks(1);
+                endDate = currentDate;
+                break;
+            default:
+                break;
+        }
+
+        // Filter the original list of bons based on the selected date range
+        ArrayList<Bon> filteredBons = new ArrayList<>();
+        for (Bon bon : originalBons) {
+            LocalDate bonDate = bon.getDateBon();
+            if (bonDate.isAfter(startDate) || bonDate.isEqual(startDate)) {
+                filteredBons.add(bon);
+            }
+        }
+
+        // Clear the existing items in the TableView and add the filtered items
+        bonTableView.getItems().clear();
+        bonTableView.getItems().addAll(filteredBons);
     }
 
 }

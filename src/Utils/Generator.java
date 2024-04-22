@@ -15,7 +15,7 @@ import res.R;
 
 public class Generator {
 
-    public static void generateAndSaveEAN13(String ean13Number, String fileName) throws WriterException, IOException {
+    public static File generateAndSaveEAN13(String ean13Number, String fileName) throws WriterException, IOException {
         if (ean13Number.length() != 13) {
             throw new IllegalArgumentException("EAN-13 number must be 13 digits long");
         }
@@ -43,13 +43,14 @@ public class Generator {
         String s=R.BASE_DIR+File.separator+"barcode.png";
         File file=new File(s);
         ImageIO.write(image, "png", file);
+        return file;
     }
 
     public static void main(String[] args) {
-        String ean13Number = "0000000000024";
+        String ean13Number = "14";
         String fileName = "barcode.png"; // Name of the file
         try {
-            generateAndSaveEAN13(ean13Number, fileName);
+            generateAndSaveEAN13(CalculatorCheck.fullDigit(ean13Number), fileName);
             System.out.println("EAN-13 barcode saved successfully!");
         } catch (WriterException | IOException e) {
             e.printStackTrace();

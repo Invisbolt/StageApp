@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.InputStream;
 public class R {
     
-    public static InputStream bonEsStream() {
-        return getResourceStream("BonES.pdf");
+    public static InputStream bonEntre() {
+        return getResourceStream("B.pdf");
     }
 
     public static InputStream bonSStream() {

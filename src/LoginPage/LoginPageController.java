@@ -10,6 +10,7 @@ import java.sql.*;
 import java.util.ResourceBundle;
 
 import Architecture.User;
+import java.io.IOException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -55,6 +56,22 @@ public class LoginPageController implements Initializable {
     @FXML
     private void handleScanButtonClick() {
         // Add your logic here for when the scanButton is clicked
+
+        // Get the current stage
+        Stage stage = (Stage) quitButton.getScene().getWindow();
+        stage.close();
+
+        // Load the scanner window
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Scanner/ScannerFXML.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage scannerStage = new Stage();
+            scannerStage.setScene(scene);
+            scannerStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -72,7 +89,7 @@ public class LoginPageController implements Initializable {
 
         // JDBC URL for PostgreSQL database
         String url = "jdbc:postgresql://localhost:5432/sysGB"; // Replace "your_database_name" with your actual database
-                                                               // name
+        // name
 
         try {
             // Establish the database connection
@@ -94,12 +111,12 @@ public class LoginPageController implements Initializable {
                 Stage loginStage = (Stage) userField.getScene().getWindow();
                 loginStage.close();
 
-                int c=resultSet.getInt("code_employe");
-                System.out.println(username+password+c);
+                int c = resultSet.getInt("code_employe");
+                System.out.println(username + password + c);
 
                 // Show the StageApp stage
                 Stage stageApp = new Stage();
-                StageApp st=new StageApp();
+                StageApp st = new StageApp();
                 FXMLDocumentController.initData(new User(username, password, c));
                 st.start(stageApp);
 

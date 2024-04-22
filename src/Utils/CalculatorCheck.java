@@ -4,7 +4,7 @@ public class CalculatorCheck {
 
     public static int calculateCheckDigit(String number) {
         // Check if the input is a valid 12-digit number
-        number=String.format("%012d", Long.parseLong(number));
+        number=String.format("%012d", Long.parseLong(number)).replace(' ', '0');
         int[] weights = {1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3};// Define the weights for each position
 
         // Initialize sum to 0
@@ -26,13 +26,14 @@ public class CalculatorCheck {
     }
 
     public static String fullDigit(String number) {
+        number=String.format("%012d", Long.parseLong(number)).replace(' ', '0');
         int checkDigit = calculateCheckDigit(number);
         return number + checkDigit;
     }
 
     public static void main(String[] args) {
-
-        String number = "000000000002";
+        
+        String number = "5";
         int checkDigit = calculateCheckDigit(number);
         System.out.println(fullDigit(number));
     }

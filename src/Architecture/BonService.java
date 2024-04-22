@@ -110,4 +110,65 @@ public class BonService {
 
         return nextCodeBon;
     }
+
+    public static void pointageValidate(String num) {
+
+        Integer codeEmploye = Integer.valueOf(num.substring(0, num.length() - 1));
+        Bon b=getBonByCode(codeEmploye);
+
+        // SQL statement to insert a value into the pointages table
+        String sql = "INSERT INTO pointages (date_pointage, code_employe, type_pointage, heure) VALUES (?, ?, ?, ?)";
+
+        // Values for insertion
+        LocalDate datePointage = LocalDate.now();
+        String typePointage = "S";
+        LocalTime heure = LocalTime.now();
+
+        try (
+                // Establishing a connection to the database
+                Connection connection = DriverManager.getConnection(url, user, password);
+                // Creating a PreparedStatement for the SQL statement
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            // Setting values for parameters in the prepared statement
+            preparedStatement.setDate(1, Date.valueOf(datePointage));
+            preparedStatement.setInt(2, b.getEmploye().getCodeEmploye());
+            preparedStatement.setString(3, typePointage);
+            preparedStatement.setTime(4, Time.valueOf(heure));
+
+            // Executing the insertion
+            int rowsInserted = preparedStatement.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("A new entry was inserted successfully!");
+                JOptionPane.showMessageDialog(null, "Validation successful");
+            }
+        } catch (SQLException e) {
+            System.out.println("An error occurred while inserting the entry.");
+            e.printStackTrace();
+            // Handle exceptions appropriately
+            JOptionPane.showMessageDialog(null, "Error occurred while inserting the entry: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static Bon getBonByCode(Integer codeBon) {
+        Bon bon = null;
+
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            String sql = "SELECT * FROM bons WHERE code_bon = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, codeBon);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        Employe employe = Employe.getEmploye(rs.getInt("code_employe")); // Assuming you have a method to retrieve an employe by code
+                        bon = createBonFromResultSet(rs, employe);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle exceptions appropriately
+        }
+
+        return bon;
+    }
+
 }
