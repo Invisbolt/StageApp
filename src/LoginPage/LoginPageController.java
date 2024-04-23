@@ -1,16 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package LoginPage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.util.ResourceBundle;
 
 import Architecture.User;
-import java.io.IOException;
+import res.R; // Import the R class
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -87,13 +83,10 @@ public class LoginPageController implements Initializable {
             return;
         }
 
-        // JDBC URL for PostgreSQL database
-        String url = "jdbc:postgresql://localhost:5432/sysGB"; // Replace "your_database_name" with your actual database
-        // name
-
+       
         try {
             // Establish the database connection
-            Connection connection = DriverManager.getConnection(url, "postgres", "0000");
+            Connection connection = R.getConnection();
 
             // Create a PreparedStatement to check if the user exists
             String query = "SELECT * FROM utilisateurs WHERE nom_utilisateur = ? AND mot_de_passe = ?";

@@ -5,12 +5,12 @@ package Architecture;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author Abidine
  */
 public class User {
+
     private String nomUtilisateur;
     private String motDePasse;
     private int codeEmploye;
@@ -20,7 +20,6 @@ public class User {
         this.motDePasse = motDePasse;
         this.codeEmploye = codeEmploye;
     }
-
 
     /**
      * @return String return the nomUtilisateur

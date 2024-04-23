@@ -1,6 +1,7 @@
 package Architecture;
 
 import Utils.PDFUtil;
+import res.R; // Import the R class
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.*;
@@ -12,18 +13,13 @@ import javax.swing.JOptionPane;
 
 public class BonService {
 
-    private static final String url = "jdbc:postgresql://localhost:5432/sysGB";
-    private static final String user = "postgres";
-    private static final String password = "0000";
-
-    // SQL INSERT statement
     private static final String INSERT_SQL = "INSERT INTO bons (code_bon, code_employe, type_bon, date_bon, heure_bon, heure_v, motif, etat_bon) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-    public static List<Bon> getBonsByEmployees(List<Employe> employees) {
+    public static List<Bon> getBonsByEmployees(List<Employe> employees) throws ClassNotFoundException {
         List<Bon> bonsByEmployees = new ArrayList<>();
 
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+        try (Connection conn = R.getConnection()) {
             String sql = "SELECT * FROM bons WHERE code_employe = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 for (Employe employe : employees) {
@@ -37,23 +33,20 @@ public class BonService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle exceptions appropriately
+            handleSQLException("Error occurred while fetching bons by employees", e);
         }
 
         return bonsByEmployees;
     }
 
-    public static void saveBon(Bon bon, Employe emp) throws IOException, URISyntaxException {
-        try (Connection conn = DriverManager.getConnection(url, user, password);
+    public static void saveBon(Bon bon, Employe emp) throws IOException, URISyntaxException, ClassNotFoundException {
+        try (Connection conn = R.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(INSERT_SQL)) {
             setBonParameters(pstmt, bon);
             pstmt.executeUpdate();
             PDFUtil.main(bon, emp);
         } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle exceptions appropriately
-            JOptionPane.showMessageDialog(null, "Error occurred while saving the bon: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            handleSQLException("Error occurred while saving the bon", e);
         }
     }
 
@@ -75,7 +68,6 @@ public class BonService {
         pstmt.setString(3, bon.getType_bon());
         pstmt.setDate(4, Date.valueOf(bon.getDateBon()));
 
-        // Convert LocalTime to Time objects, with null checks
         if (bon.getHeureBon() != null) {
             pstmt.setTime(5, Time.valueOf(bon.getHeureBon()));
         } else {
@@ -91,11 +83,11 @@ public class BonService {
         pstmt.setString(8, String.valueOf(bon.getEtatBon()));
     }
 
-    public static int getNextCodeBon() {
+    public static int getNextCodeBon() throws ClassNotFoundException {
         int nextCodeBon = 0;
-        String sequenceName = "bons_code_bon_seq"; // Replace "your_sequence_name" with the actual sequence name
+        String sequenceName = "bons_code_bon_seq"; // Replace with your actual sequence name
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);
+        try (Connection conn = R.getConnection();
                 Statement stmt = conn.createStatement()) {
             String sql = "SELECT nextval('" + sequenceName + "')";
             try (ResultSet rs = stmt.executeQuery(sql)) {
@@ -104,71 +96,64 @@ public class BonService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle exceptions appropriately
+            handleSQLException("Error occurred while getting next code bon", e);
         }
 
         return nextCodeBon;
     }
 
-    public static void pointageValidate(String num) {
+    public static void pointageValidate(String num) throws ClassNotFoundException {
+        if (num.length() < 11) {
+            JOptionPane.showMessageDialog(null, "Entrer un numero valide");
+            return;
+        }
+        num=String.format("%013d", Integer.parseInt(num));
+        Integer codeb = Integer.valueOf(num.substring(0, num.length() - 1));
+        Bon bon = getBonByCode(codeb);
 
-        Integer codeEmploye = Integer.valueOf(num.substring(0, num.length() - 1));
-        Bon b=getBonByCode(codeEmploye);
-
-        // SQL statement to insert a value into the pointages table
         String sql = "INSERT INTO pointages (date_pointage, code_employe, type_pointage, heure) VALUES (?, ?, ?, ?)";
-
-        // Values for insertion
         LocalDate datePointage = LocalDate.now();
-        String typePointage = "S";
         LocalTime heure = LocalTime.now();
 
-        try (
-                // Establishing a connection to the database
-                Connection connection = DriverManager.getConnection(url, user, password);
-                // Creating a PreparedStatement for the SQL statement
+        try (Connection connection = R.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            // Setting values for parameters in the prepared statement
             preparedStatement.setDate(1, Date.valueOf(datePointage));
-            preparedStatement.setInt(2, b.getEmploye().getCodeEmploye());
-            preparedStatement.setString(3, typePointage);
+            preparedStatement.setInt(2, bon.getEmploye().getCodeEmploye());
+            preparedStatement.setString(3, bon.getType_bon());
             preparedStatement.setTime(4, Time.valueOf(heure));
 
-            // Executing the insertion
             int rowsInserted = preparedStatement.executeUpdate();
             if (rowsInserted > 0) {
-                System.out.println("A new entry was inserted successfully!");
                 JOptionPane.showMessageDialog(null, "Validation successful");
             }
         } catch (SQLException e) {
-            System.out.println("An error occurred while inserting the entry.");
-            e.printStackTrace();
-            // Handle exceptions appropriately
-            JOptionPane.showMessageDialog(null, "Error occurred while inserting the entry: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            handleSQLException("Error occurred while pointage validation", e);
         }
     }
 
-    public static Bon getBonByCode(Integer codeBon) {
+    public static Bon getBonByCode(Integer codeBon) throws ClassNotFoundException {
         Bon bon = null;
 
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+        try (Connection conn = R.getConnection()) {
             String sql = "SELECT * FROM bons WHERE code_bon = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, codeBon);
                 try (ResultSet rs = pstmt.executeQuery()) {
                     if (rs.next()) {
-                        Employe employe = Employe.getEmploye(rs.getInt("code_employe")); // Assuming you have a method to retrieve an employe by code
+                        Employe employe = Employe.getEmploye(rs.getInt("code_employe"));
                         bon = createBonFromResultSet(rs, employe);
                     }
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle exceptions appropriately
+            handleSQLException("Error occurred while getting bon by code", e);
         }
 
         return bon;
     }
 
+    private static void handleSQLException(String message, SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, message + ": " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
 }

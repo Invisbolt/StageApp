@@ -1,32 +1,23 @@
 package Architecture;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import res.R; // Import the R class
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author Abidine
- */
 public class Employe {
+
     private int codeEmploye;
     private String nom;
     private String prenom;
     private LocalDate dateNaissance;
     private int service_c;
-    
-    public Employe(){
+
+    public Employe() {
     }
 
     public Employe(int codeEmploye, String nom, String prenom, LocalDate dateNaissance, int service_c) {
@@ -53,7 +44,6 @@ public class Employe {
         this.dateNaissance = dateNaissance;
     }
 
-
     public int getCodeEmploye() {
         return codeEmploye;
     }
@@ -73,7 +63,7 @@ public class Employe {
     public int getService_e() {
         return service_c;
     }
-    
+
     public static Employe getEmploye(int codeEmploye) {
         Employe employe = null;
         Connection connection = null;
@@ -81,8 +71,8 @@ public class Employe {
         ResultSet resultSet = null;
 
         try {
-            // Establishing connection to the database
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/sysGB", "postgres", "0000");
+            // Establishing connection to the database using resources from R class
+            connection = R.getConnection();
 
             // Creating a statement
             statement = connection.createStatement();
@@ -104,6 +94,8 @@ public class Employe {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Employe.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Employe.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             // Close ResultSet, Statement, and Connection
             try {
@@ -123,9 +115,9 @@ public class Employe {
 
         return employe;
     }
-    
-    public String toString(){
-        return(this.nom+" "+this.prenom);
+
+    public String toString() {
+        return (this.nom + " " + this.prenom);
     }
 
 }

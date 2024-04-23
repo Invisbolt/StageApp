@@ -33,8 +33,9 @@ public class CalculatorCheck {
 
     public static void main(String[] args) {
         
-        String number = "5";
+        String number = "00000000050";
         int checkDigit = calculateCheckDigit(number);
-        System.out.println(fullDigit(number));
+        System.out.println(number+checkDigit);
+        System.out.println("000000000505".length());
     }
 }

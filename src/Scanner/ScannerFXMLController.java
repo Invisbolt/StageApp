@@ -3,7 +3,6 @@ package Scanner;
 import Architecture.BonService;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.function.UnaryOperator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,18 +39,18 @@ public class ScannerFXMLController implements Initializable {
     }
 
     @FXML
-    private void handleScanButtonClick(ActionEvent e) {
+    private void handleScanButtonClick(ActionEvent e) throws ClassNotFoundException {
         scan();
     }
 
     @FXML
-    private void handleEnterPressed(KeyEvent e) {
+    private void handleEnterPressed(KeyEvent e) throws ClassNotFoundException {
         if (e.getCode() == KeyCode.ENTER) {
             scan();
         }
     }
 
-    private void scan() {
+    private void scan() throws ClassNotFoundException {
         String input = numField.getText();
         if (input.length() <= 13) {
             BonService.pointageValidate(input);
@@ -66,10 +65,11 @@ public class ScannerFXMLController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         numField.setTextFormatter(new TextFormatter<>(change -> {
             String newText = change.getControlNewText();
-            if (newText.length() < 13) {
+            if (newText.matches("\\d*") && newText.length() <= 13) {
                 return change;
+            } else {
+                return null;
             }
-            return null; // Prevent change if length exceeds 13
         }));
     }
 

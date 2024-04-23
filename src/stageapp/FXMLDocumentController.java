@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package stageapp;
 
 import Architecture.Bon;
@@ -11,13 +6,11 @@ import Architecture.Employe;
 import Architecture.Service;
 import Architecture.User;
 import Utils.CalculatorCheck;
+import res.R; // Import the R class
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -25,7 +18,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -44,22 +36,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author Abidine
- */
 public class FXMLDocumentController implements Initializable {
 
     private static User user_app;
-    private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/sysGB";
-    private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "0000";
     private static Connection con;
-
-    private static Connection getConnection() throws Exception {
-        Class.forName("org.postgresql.Driver");
-        return DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-    }
 
     @FXML
     private ComboBox<Employe> cBox;
@@ -161,7 +141,7 @@ public class FXMLDocumentController implements Initializable {
     }
 
     @FXML
-    private void handleConfirmationClick(ActionEvent event) throws IOException, URISyntaxException {
+    private void handleConfirmationClick(ActionEvent event) throws IOException, URISyntaxException, ClassNotFoundException {
         System.out.println("TEST");
         Employe emp = cBox.getValue();
         String cBoxTValue = cBoxT.getValue(); // Store the value to avoid multiple calls
@@ -175,14 +155,16 @@ public class FXMLDocumentController implements Initializable {
                 // Add code to use bon as needed
                 BonService.saveBon(bon, emp);
                 BonService.pointageValidate(CalculatorCheck.fullDigit(String.valueOf(bon.getCodeBon())));
+                refreshtable();
 
             } else if (cBoxTValue.equals("Bon Sortie")) {
                 String type = "S";
                 char etatbon = 'N';
                 Bon bon = new Bon(BonService.getNextCodeBon(), emp, type, LocalDate.now(), LocalTime.now(), null, motifText.getText(), etatbon);
-
                 // Add code to use bon as needed
                 BonService.saveBon(bon, emp);
+                refreshtable();
+
             } else {
                 JOptionPane.showMessageDialog(null, "Choix De bon n'est pas valide");
             }
@@ -204,6 +186,8 @@ public class FXMLDocumentController implements Initializable {
                 Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (URISyntaxException ex) {
                 Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         Connectdb();
@@ -216,33 +200,6 @@ public class FXMLDocumentController implements Initializable {
         cBoxB.setOnAction(e -> {
             filterBonsBySelectedOption();
         });
-
-        TableColumn<Bon, Integer> codeBonColumn = new TableColumn<>("Code Bon");
-        codeBonColumn.setCellValueFactory(new PropertyValueFactory<>("codeBon"));
-
-        TableColumn<Bon, Employe> employeColumn = new TableColumn<>("Employe");
-        employeColumn.setCellValueFactory(new PropertyValueFactory<>("employe"));
-
-        TableColumn<Bon, String> typeBonColumn = new TableColumn<>("Type Bon");
-        typeBonColumn.setCellValueFactory(new PropertyValueFactory<>("type_bon"));
-
-        TableColumn<Bon, LocalDate> dateBonColumn = new TableColumn<>("Date Bon");
-        dateBonColumn.setCellValueFactory(new PropertyValueFactory<>("dateBon"));
-
-        TableColumn<Bon, LocalTime> heureBonColumn = new TableColumn<>("Heure Bon");
-        heureBonColumn.setCellValueFactory(new PropertyValueFactory<>("heureBon"));
-
-        TableColumn<Bon, LocalTime> heureVColumn = new TableColumn<>("Heure V");
-        heureVColumn.setCellValueFactory(new PropertyValueFactory<>("heureV"));
-
-        TableColumn<Bon, String> motifColumn = new TableColumn<>("Motif");
-        motifColumn.setCellValueFactory(new PropertyValueFactory<>("motif"));
-
-        TableColumn<Bon, Character> etatBonColumn = new TableColumn<>("Etat Bon");
-        etatBonColumn.setCellValueFactory(new PropertyValueFactory<>("etatBon"));
-        bonTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        bonTableView.getColumns().addAll(codeBonColumn, employeColumn, typeBonColumn,
-                dateBonColumn, heureBonColumn, heureVColumn, motifColumn, etatBonColumn);
 
         // TODO
         accPan.setVisible(true);
@@ -260,28 +217,16 @@ public class FXMLDocumentController implements Initializable {
         blist.add("Mensuel");
         blist.add("Semaine");
         cBoxB.getItems().setAll(blist);
-
-        try {
-            con = getConnection();
-            Statement st = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-
-        } catch (Exception ex) {
-            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        tablestart();
     }
 
     private void Connectdb() {
         try {
-            con = getConnection();
-            Statement statement = con.createStatement();
+            con = R.getConnection(); // Using R class for getting connection
             Employe chef = Employe.getEmploye(user_app.getCodeEmploye());
             Service sr = Service.getService(chef.getService_e(), chef);
             System.out.println(chef.getService_e());
-            cBox.getItems().setAll(Service.getEmployes(statement, sr));
-            bonTableView.getItems().clear();
-            bonTableView.getItems().addAll(BonService.getBonsByEmployees(cBox.getItems()));
-            originalBons = bonTableView.getItems();
-            System.out.println(cBox.getItems());
+            cBox.getItems().setAll(Service.getEmployes(sr));
         } catch (Exception ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR); // Change to ERROR type for exceptions
             alert.setTitle("Error Dialog"); // Change title to indicate it's an error
@@ -336,6 +281,51 @@ public class FXMLDocumentController implements Initializable {
         // Clear the existing items in the TableView and add the filtered items
         bonTableView.getItems().clear();
         bonTableView.getItems().addAll(filteredBons);
+
+    }
+
+    private void refreshtable() throws ClassNotFoundException {
+        bonTableView.getItems().clear();
+        bonTableView.getItems().addAll(BonService.getBonsByEmployees(cBox.getItems()));
+
+    }
+
+    private void tablestart() {
+        try {
+            TableColumn<Bon, Integer> codeBonColumn = new TableColumn<>("Code Bon");
+            codeBonColumn.setCellValueFactory(new PropertyValueFactory<>("codeBon"));
+
+            TableColumn<Bon, Employe> employeColumn = new TableColumn<>("Employe");
+            employeColumn.setCellValueFactory(new PropertyValueFactory<>("employe"));
+
+            TableColumn<Bon, String> typeBonColumn = new TableColumn<>("Type Bon");
+            typeBonColumn.setCellValueFactory(new PropertyValueFactory<>("type_bon"));
+
+            TableColumn<Bon, LocalDate> dateBonColumn = new TableColumn<>("Date Bon");
+            dateBonColumn.setCellValueFactory(new PropertyValueFactory<>("dateBon"));
+
+            TableColumn<Bon, LocalTime> heureBonColumn = new TableColumn<>("Heure Bon");
+            heureBonColumn.setCellValueFactory(new PropertyValueFactory<>("heureBon"));
+
+            TableColumn<Bon, LocalTime> heureVColumn = new TableColumn<>("Heure V");
+            heureVColumn.setCellValueFactory(new PropertyValueFactory<>("heureV"));
+
+            TableColumn<Bon, String> motifColumn = new TableColumn<>("Motif");
+            motifColumn.setCellValueFactory(new PropertyValueFactory<>("motif"));
+
+            TableColumn<Bon, Character> etatBonColumn = new TableColumn<>("Etat Bon");
+            etatBonColumn.setCellValueFactory(new PropertyValueFactory<>("etatBon"));
+            bonTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+            bonTableView.getColumns().addAll(codeBonColumn, employeColumn, typeBonColumn,
+                    dateBonColumn, heureBonColumn, heureVColumn, motifColumn, etatBonColumn);
+            bonTableView.getItems().clear();
+            bonTableView.getItems().addAll(BonService.getBonsByEmployees(cBox.getItems()));
+            originalBons = bonTableView.getItems();
+            System.out.println(cBox.getItems());
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
 }

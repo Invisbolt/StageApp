@@ -19,17 +19,17 @@ import javafx.stage.StageStyle;
 public class StageApp extends Application {
 
     @Override
-public void start(Stage stage) throws Exception {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLDocument.fxml"));
-    Parent root = loader.load(); // Load the FXML file
+    public void start(Stage stage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLDocument.fxml"));
+        Parent root = loader.load(); // Load the FXML file
 
-    // Get the controller instance
-    FXMLDocumentController controller = loader.getController();
-    Scene scene = new Scene(root);
-    stage.initStyle(StageStyle.UNDECORATED);
-    stage.setScene(scene);
-    stage.show();
-}
+        // Get the controller instance
+        FXMLDocumentController controller = loader.getController();
+        Scene scene = new Scene(root);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     /**
      * @param args the command line arguments

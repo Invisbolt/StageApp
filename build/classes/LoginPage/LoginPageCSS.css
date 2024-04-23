@@ -1,0 +1,37 @@
+ Style for AnchorPane */
+#AnchorPane {
+    -fx-background-color: #e7e0e0;
+}
+
+
+
+/* Style for text fields */
+.text-field {
+    -fx-background-color: #ffffff; /* White background */
+    -fx-border-color: #cccccc; /* Light gray border */
+    -fx-border-width: 1px;
+}
+
+/* Style for password field */
+.password-field {
+    -fx-background-color: #ffffff; /* White background */
+    -fx-border-color: #cccccc; /* Light gray border */
+    -fx-border-width: 1px;
+}
+
+/* Style for buttons */
+.button {
+    -fx-background-color: #4CAF50; /* Green background */
+    -fx-text-fill: white; /* White text color */
+    -fx-font-size: 14px;
+    -fx-padding: 8px 16px; /* Padding for button */
+    
+}
+
+/* Style for scan button */
+#scanButton {
+    -fx-background-color: #2196F3; /* Blue background */
+    -fx-text-fill: white; /* White text color */
+    -fx-font-size: 14px;
+    -fx-padding: 8px 16px; /* Padding for button */
+}

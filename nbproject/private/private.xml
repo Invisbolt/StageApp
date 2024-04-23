@@ -3,12 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/stageapp/FXMLDocument.fxml</file>
+            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/Utils/CalculatorCheck.java</file>
+            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/Scanner/ScannerFXML.fxml</file>
+            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/stageapp/StyleSheet.css</file>
+            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/LoginPage/LoginPage.fxml</file>
+            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/LoginPage/LoginPageCSS.css</file>
             <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/Architecture/BonService.java</file>
-            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/stageapp/StageApp.java</file>
-            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/stageapp/FXMLDocumentController.java</file>
-            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/Utils/PDFUtil.java</file>
-            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/Architecture/Bon.java</file>
+            <file>file:/C:/Users/Abidine/Documents/NetBeansProjects/StageApp/src/Scanner/ScannerFXMLController.java</file>
         </group>
     </open-files>
 </project-private>
