@@ -22,6 +22,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfFormField;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import java.io.InputStream;
@@ -88,13 +89,9 @@ public class PDFUtil {
             // Replace placeholders with data
             for (Map.Entry<String, String> entry : data.entrySet()) {
                 formFields.setField(entry.getKey(), entry.getValue());
+                formFields.setFieldProperty(entry.getKey(), "setfflags", PdfFormField.FF_READ_ONLY, null);
             }
-            // Get form fields
-
-            // Replace placeholders with data
-            for (Map.Entry<String, String> entry : data.entrySet()) {
-                formFields.setField(entry.getKey(), entry.getValue());
-            }
+            
             // Close stamper and reader
             stamper.close();
             reader.close();

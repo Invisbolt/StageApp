@@ -174,6 +174,8 @@ public class FXMLDocumentController implements Initializable {
         }
         empNumField.setText("");
         motifText.setText("");
+        cBox.setValue(null);
+        cBoxT.setValue(null);
 
     }
 
@@ -193,6 +195,7 @@ public class FXMLDocumentController implements Initializable {
         Connectdb();
         cBox.setOnAction(event -> {
             // Code to execute when the ComboBox selection changes
+            if(cBox.getSelectionModel().getSelectedItem()==null) return;
             Employe selectedItem = cBox.getSelectionModel().getSelectedItem();
             empNumField.setText(String.valueOf(selectedItem.getCodeEmploye()));
             empNumField.setEditable(false);
@@ -320,7 +323,7 @@ public class FXMLDocumentController implements Initializable {
                     dateBonColumn, heureBonColumn, heureVColumn, motifColumn, etatBonColumn);
             bonTableView.getItems().clear();
             bonTableView.getItems().addAll(BonService.getBonsByEmployees(cBox.getItems()));
-            originalBons = bonTableView.getItems();
+            originalBons=new ArrayList<>(bonTableView.getItems());
             System.out.println(cBox.getItems());
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
