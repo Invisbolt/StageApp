@@ -38,7 +38,7 @@ public class PDFUtil {
     public static void makePDF(Employe e, Bon b, String imagePath, InputStream boninput) throws URISyntaxException, WriterException, IOException {
         // Replace these values with your actual data
         Map<String, String> data = new HashMap<>();
-        String code_m = String.format("%012d",b.getCodeBon()).replace(' ','0');
+        String code_m = String.format("%012d", b.getCodeBon()).replace(' ', '0');
         System.out.println(code_m);
         Generator.generateAndSaveEAN13(CalculatorCheck.fullDigit(code_m), imagePath);
         data.put("Numéro", code_m);
@@ -74,14 +74,15 @@ public class PDFUtil {
             PdfContentByte contentByte = stamper.getOverContent(pageNumber);
 
             // Load the image
-            Image image = Image.getInstance(imagePath);
+            if (imagePath != null) {
+                Image image = Image.getInstance(imagePath);
+                // Set position and scale of the image
+                image.setAbsolutePosition(imageX, 100); // Y position (adjust as needed)
+                image.scaleAbsolute(imageWidth, 100); // Height (adjust as needed)
 
-            // Set position and scale of the image
-            image.setAbsolutePosition(imageX, 100); // Y position (adjust as needed)
-            image.scaleAbsolute(imageWidth, 100); // Height (adjust as needed)
-
-            // Add the image to the PDF content
-            contentByte.addImage(image);
+                // Add the image to the PDF content
+                contentByte.addImage(image);
+            }
 
             // Get form fields
             AcroFields formFields = stamper.getAcroFields();
@@ -91,15 +92,15 @@ public class PDFUtil {
                 formFields.setField(entry.getKey(), entry.getValue());
                 formFields.setFieldProperty(entry.getKey(), "setfflags", PdfFormField.FF_READ_ONLY, null);
             }
-            
+
             // Close stamper and reader
             stamper.close();
             reader.close();
             outputStream.close();
 
             System.out.println("PDF modified successfully.");
-            String sti=outputDir+File.separator+"output.pdf";
-            Desktop.getDesktop().open(new File(outputDir+File.separator+"output.pdf"));
+            String sti = outputDir + File.separator + "output.pdf";
+            Desktop.getDesktop().open(new File(outputDir + File.separator + "output.pdf"));
         } catch (IOException | DocumentException ex) {
             ex.printStackTrace();
         }
@@ -109,10 +110,10 @@ public class PDFUtil {
         try {
             // Create an instance of Employe
             Employe employe = new Employe(1, "John", "Doe", LocalDate.now(), 0);
-            
+
             // Create an instance of Bon
             Bon bon = new Bon(25, employe, "S", LocalDate.MIN, LocalTime.NOON, LocalTime.MIN, "Familial issues", 'V');
-            
+
             // Call the makePDF method from PDFUtil
             makePDF(employe, bon, R.BARCODE_DIR, R.bonSStream());
         } catch (WriterException ex) {
@@ -122,10 +123,13 @@ public class PDFUtil {
 
     public static void main(Bon bon, Employe emp) throws IOException, URISyntaxException {
         try {
-            
-            if(bon.getType_bon().equals("E"))makePDF(emp, bon, R.BARCODE_DIR, R.bonEntre());
-            else makePDF(emp, bon, R.BARCODE_DIR, R.bonSStream());
-            
+
+            if (bon.getType_bon().equals("E")) {
+                makePDF(emp, bon, R.BARCODE_DIR, R.bonEntre());
+            } else {
+                makePDF(emp, bon, R.BARCODE_DIR, R.bonSStream());
+            }
+
         } catch (WriterException ex) {
             Logger.getLogger(PDFUtil.class.getName()).log(Level.SEVERE, null, ex);
         }

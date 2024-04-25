@@ -18,7 +18,10 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import stageapp.FXMLDocumentController;
 import stageapp.StageApp;
 
@@ -48,7 +51,12 @@ public class LoginPageController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }
-
+    
+    
+    @FXML
+    private void handleclick(KeyEvent e) throws Exception{
+        if(e.getCode()==KeyCode.ENTER) handleConnectButtonClick();
+    }
     @FXML
     private void handleScanButtonClick() {
         // Add your logic here for when the scanButton is clicked
@@ -63,6 +71,7 @@ public class LoginPageController implements Initializable {
             Parent root = loader.load();
             Scene scene = new Scene(root);
             Stage scannerStage = new Stage();
+            scannerStage.initStyle(StageStyle.UNDECORATED);
             scannerStage.setScene(scene);
             scannerStage.show();
         } catch (IOException e) {
@@ -100,7 +109,6 @@ public class LoginPageController implements Initializable {
             // Check if a row was returned (i.e., if the user exists)
             if (resultSet.next()) {
                 // User exists, open the StageApp or perform further actions here
-                showAlert("Success", "User exists. Opening StageApp...", AlertType.INFORMATION);
                 Stage loginStage = (Stage) userField.getScene().getWindow();
                 loginStage.close();
 

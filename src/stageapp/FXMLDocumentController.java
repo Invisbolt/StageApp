@@ -6,6 +6,8 @@ import Architecture.Employe;
 import Architecture.Service;
 import Architecture.User;
 import Utils.CalculatorCheck;
+import Utils.PDFUtil;
+import com.google.zxing.WriterException;
 import res.R; // Import the R class
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,6 +27,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -195,7 +199,9 @@ public class FXMLDocumentController implements Initializable {
         Connectdb();
         cBox.setOnAction(event -> {
             // Code to execute when the ComboBox selection changes
-            if(cBox.getSelectionModel().getSelectedItem()==null) return;
+            if (cBox.getSelectionModel().getSelectedItem() == null) {
+                return;
+            }
             Employe selectedItem = cBox.getSelectionModel().getSelectedItem();
             empNumField.setText(String.valueOf(selectedItem.getCodeEmploye()));
             empNumField.setEditable(false);
@@ -203,7 +209,20 @@ public class FXMLDocumentController implements Initializable {
         cBoxB.setOnAction(e -> {
             filterBonsBySelectedOption();
         });
-
+        cBox.setEditable(true);
+        cBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                ArrayList<Employe> filteredItems = new ArrayList<>();
+                for (Employe item : cboxdata) {
+                    if (item.toString().toLowerCase().contains(newValue.toLowerCase())) {
+                        filteredItems.add(item);
+                    }
+                }
+                cBox.getItems().setAll(filteredItems);
+                cBox.hide(); // Hide and then show to update the filtered items
+                cBox.show();
+            }
+        });
         // TODO
         accPan.setVisible(true);
         accPan.setDisable(false);
@@ -222,14 +241,16 @@ public class FXMLDocumentController implements Initializable {
         cBoxB.getItems().setAll(blist);
         tablestart();
     }
+    private ArrayList<Employe> cboxdata;
 
     private void Connectdb() {
         try {
             con = R.getConnection(); // Using R class for getting connection
             Employe chef = Employe.getEmploye(user_app.getCodeEmploye());
             Service sr = Service.getService(chef.getService_e(), chef);
+            cboxdata = new ArrayList<Employe>(Service.getEmployes(sr));
             System.out.println(chef.getService_e());
-            cBox.getItems().setAll(Service.getEmployes(sr));
+            cBox.getItems().setAll(new ArrayList<Employe>(cboxdata));
         } catch (Exception ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR); // Change to ERROR type for exceptions
             alert.setTitle("Error Dialog"); // Change title to indicate it's an error
@@ -237,7 +258,6 @@ public class FXMLDocumentController implements Initializable {
             alert.setContentText(ex.getMessage()); // Set the exception message as content
             alert.showAndWait(); // Show the alert and wait for user response
             ex.printStackTrace();
-            System.out.println(user_app);
             Platform.exit(); // Exit the application if user acknowledges the error
         }
     }
@@ -323,12 +343,38 @@ public class FXMLDocumentController implements Initializable {
                     dateBonColumn, heureBonColumn, heureVColumn, motifColumn, etatBonColumn);
             bonTableView.getItems().clear();
             bonTableView.getItems().addAll(BonService.getBonsByEmployees(cBox.getItems()));
-            originalBons=new ArrayList<>(bonTableView.getItems());
+            originalBons = new ArrayList<>(bonTableView.getItems());
+            bonTableView.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) { // Check if it's a double-click
+                    Bon selectedBon = bonTableView.getSelectionModel().getSelectedItem();
+                    if (selectedBon != null) {
+                        try {
+                            // Execute your code here when a row is double-clicked
+                            // For example, you can open a dialog to display more details
+                            // or perform some action related to the selected item.
+                            handleRowDoubleClick(selectedBon);
+                        } catch (URISyntaxException ex) {
+                            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (WriterException ex) {
+                            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (IOException ex) {
+                            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            });
+
             System.out.println(cBox.getItems());
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    private void handleRowDoubleClick(Bon selectedBon) throws URISyntaxException, WriterException, IOException {
+        if(selectedBon.getType_bon().equals("E"))PDFUtil.makePDF(selectedBon.getEmploye(), selectedBon, null, R.bonEntre());
+        else PDFUtil.makePDF(selectedBon.getEmploye(), selectedBon, null, R.bonSStream());
+        
     }
 
 }

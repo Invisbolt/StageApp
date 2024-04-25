@@ -40,7 +40,7 @@
                     </font>
                 </Label>
                 <TextField fx:id="userField" GridPane.columnIndex="1" />
-                <PasswordField fx:id="passField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <PasswordField fx:id="passField" onKeyPressed="#handleclick" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             </children>
         </GridPane>
         <GridPane layoutX="166.0" layoutY="261.0" prefHeight="30.0" prefWidth="288.0">

@@ -17,7 +17,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
-<AnchorPane id="AnchorPane" stylesheets="@/stageapp/StyleSheet.css" prefHeight="578.0" prefWidth="665.0" snapToPixel="false"  xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stageapp.FXMLDocumentController">
+<AnchorPane id="AnchorPane" prefHeight="578.0" prefWidth="665.0" snapToPixel="false" stylesheets="@/stageapp/StyleSheet.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stageapp.FXMLDocumentController">
     <children>
         <AnchorPane prefHeight="578.0" prefWidth="120.0" style="-fx-background-color: #82827B;">
             <children>
@@ -159,7 +159,7 @@
                     </children>
                 </GridPane>
                   <Button fx:id="confirmationButton" layoutX="341.0" layoutY="382.0" mnemonicParsing="false" style="-fx-background-color: #00FF00;" text="Confirmer" />
-            <Label layoutX="238.0" layoutY="41.0" text="Bon">
+            <Label layoutX="167.0" layoutY="40.0" text="Création du Bon">
                <font>
                   <Font name="Arial Black" size="24.0" />
                </font>
