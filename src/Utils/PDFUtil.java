@@ -17,16 +17,20 @@ import java.util.HashMap;
 import java.util.Map;
 import Architecture.Employe;
 import Architecture.Bon;
+import Architecture.Service;
 import com.google.zxing.WriterException;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfFormField;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.logging.Level;
@@ -34,19 +38,34 @@ import java.util.logging.Logger;
 import res.R;
 
 public class PDFUtil {
-
-    public static void makePDF(Employe e, Bon b, String imagePath, InputStream boninput) throws URISyntaxException, WriterException, IOException {
+static String serviceName;
+    public static void makePDF(Employe e, Bon b, String imagePath, InputStream boninput) throws URISyntaxException, WriterException, IOException, ClassNotFoundException {
         // Replace these values with your actual data
         Map<String, String> data = new HashMap<>();
+        //get service name
+        try (Connection connection = R.getConnection();
+            Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM services WHERE code_service = " + e.getService_e());
+            
+            if (resultSet.next()) {
+                serviceName = resultSet.getString("nom");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Service.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         String code_m = String.format("%012d",b.getCodeBon()).replace(' ','0');
         System.out.println(code_m);
         Generator.generateAndSaveEAN13(CalculatorCheck.fullDigit(code_m), imagePath);
         data.put("Numéro", code_m);
+        data.put("Service", serviceName.toLowerCase());
         data.put("Numero", code_m);
         data.put("Date", String.valueOf(b.getDateBon()));
         data.put("Heure", String.valueOf(b.getHeureBon()));
         data.put("Nom", e.getNom());
         data.put("Prenom", e.getPrenom());
+        data.put("DateE", String.valueOf(b.getDateBon()));
+        data.put("HeureE", String.valueOf(b.getHeureV()));
         data.put("Motif", b.getMotif());
         try {
             // Load existing PDF
@@ -89,9 +108,13 @@ public class PDFUtil {
             // Replace placeholders with data
             for (Map.Entry<String, String> entry : data.entrySet()) {
                 formFields.setField(entry.getKey(), entry.getValue());
-                formFields.setFieldProperty(entry.getKey(), "setfflags", PdfFormField.FF_READ_ONLY, null);
             }
-            
+            // Get form fields
+
+            // Replace placeholders with data
+            for (Map.Entry<String, String> entry : data.entrySet()) {
+                formFields.setField(entry.getKey(), entry.getValue());
+            }
             // Close stamper and reader
             stamper.close();
             reader.close();
@@ -105,7 +128,7 @@ public class PDFUtil {
         }
     }
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args) throws IOException, URISyntaxException, ClassNotFoundException {
         try {
             // Create an instance of Employe
             Employe employe = new Employe(1, "John", "Doe", LocalDate.now(), 0);
@@ -120,7 +143,7 @@ public class PDFUtil {
         }
     }
 
-    public static void main(Bon bon, Employe emp) throws IOException, URISyntaxException {
+    public static void main(Bon bon, Employe emp) throws IOException, URISyntaxException, ClassNotFoundException {
         try {
             
             if(bon.getType_bon().equals("E"))makePDF(emp, bon, R.BARCODE_DIR, R.bonEntre());

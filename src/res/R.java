@@ -20,11 +20,11 @@ public class R {
         return R.class.getResourceAsStream(fileName);
     }
 
-    public static final String BASE_DIR = System.getProperty("user.home") + File.separator + "stageapp";
+    public static final String BASE_DIR = System.getProperty("user.home") + File.separator + "Documents\\NetBeansProjects\\sysGB";
     public static final String OUTPUT_PDF_DIR = BASE_DIR + File.separator + "output.pdf";
     public static final String BARCODE_DIR = BASE_DIR + File.separator + "barcode.png";
     public static final String USERNAME = "postgres";
-    public static final String PASSWORD = "0000";
+    public static final String PASSWORD = "3152002";
     public static final String JDBC_URL = "jdbc:postgresql://localhost:5432/sysGB";
     public static Connection DB_CON;
     

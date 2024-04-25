@@ -103,23 +103,19 @@ public class BonService {
     }
 
     public static void pointageValidate(String num) throws ClassNotFoundException {
-        if (num.length() < 11) {
-            JOptionPane.showMessageDialog(null, "Entrer un numero valide");
-            return;
-        }
-        num=String.format("%013d", Integer.parseInt(num));
-        Integer codeb = Integer.valueOf(num.substring(0, num.length() - 1));
-        Bon bon = getBonByCode(codeb);
+        Integer codeEmploye = Integer.valueOf(num.substring(0, num.length() - 1));
+        Bon bon = getBonByCode(codeEmploye);
 
         String sql = "INSERT INTO pointages (date_pointage, code_employe, type_pointage, heure) VALUES (?, ?, ?, ?)";
         LocalDate datePointage = LocalDate.now();
+        String typePointage = "S";
         LocalTime heure = LocalTime.now();
 
         try (Connection connection = R.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setDate(1, Date.valueOf(datePointage));
             preparedStatement.setInt(2, bon.getEmploye().getCodeEmploye());
-            preparedStatement.setString(3, bon.getType_bon());
+            preparedStatement.setString(3, typePointage);
             preparedStatement.setTime(4, Time.valueOf(heure));
 
             int rowsInserted = preparedStatement.executeUpdate();

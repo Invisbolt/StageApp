@@ -14,6 +14,7 @@ and open the template in the editor.
     -fx-pref-height: 25px; /* Adjust height as needed */
 }
 
+
 .text-field .text {
     -fx-max-width: 13ch; /* Set the maximum width to fit 13 characters */
     -fx-background-color: white; /* Background color */

@@ -27,7 +27,7 @@ public class Service {
 
         try (Connection connection = R.getConnection();
                 Statement statement = connection.createStatement()) {
-            ResultSet set = statement.executeQuery("SELECT * FROM employes WHERE code_service=" + service.getCode_s());
+            ResultSet set = statement.executeQuery("SELECT * FROM employes WHERE code_service=" + service.getCode_s() +"ORDER BY nom");
 
             while (set.next()) {
                 list.add(new Employe(set.getInt("code_employe"), set.getString("nom"), set.getString("prenom"), LocalDate.of(2002, 12, 12), service.getCode_s()));

@@ -6,6 +6,7 @@ import Architecture.Employe;
 import Architecture.Service;
 import Architecture.User;
 import Utils.CalculatorCheck;
+import com.jfoenix.controls.JFXTimePicker;
 import res.R; // Import the R class
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -34,6 +35,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javax.swing.JOptionPane;
 
 public class FXMLDocumentController implements Initializable {
@@ -51,6 +54,7 @@ public class FXMLDocumentController implements Initializable {
     private TableView<Bon> bonTableView;
     @FXML
     private TextField empNumField;
+    
     @FXML
     private TextArea motifText;
 
@@ -74,7 +78,28 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private AnchorPane enPan;
-
+    
+    @FXML
+    private JFXTimePicker heure;
+    
+    @FXML
+    private Label heureLabel;
+    
+    static String selectBon;
+    
+    @FXML
+    void getType(ActionEvent event) {
+        selectBon = cBoxT.getValue();
+        if(selectBon.equals("Bon Entrée")){
+            heure.setVisible(true);
+            heureLabel.setVisible(true);
+        }
+        else{
+            heure.setVisible(false);
+            heureLabel.setVisible(false);
+        }
+    }
+    
     @FXML
     private void handleAccueilClick(MouseEvent event) {
         // Your code to handle click on Accueil label
@@ -84,6 +109,7 @@ public class FXMLDocumentController implements Initializable {
         sorPan.setDisable(true);
         enPan.setVisible(false);
         enPan.setDisable(true);
+
 
         // Add the 'used-label' class to the acclabel element
         acclabel.getStyleClass().add("used-label");
@@ -139,7 +165,15 @@ public class FXMLDocumentController implements Initializable {
 
         System.out.println("Bon Entrée label clicked!");
     }
-
+    
+    @FXML
+    private void handleEnterPressed(KeyEvent e) throws ClassNotFoundException {
+        if (e.getCode() == KeyCode.ENTER) {
+            System.out.println("ENTR@@@@@@@@");
+            confirmationButton.fire();
+        }
+    }
+    
     @FXML
     private void handleConfirmationClick(ActionEvent event) throws IOException, URISyntaxException, ClassNotFoundException {
         System.out.println("TEST");
@@ -149,14 +183,15 @@ public class FXMLDocumentController implements Initializable {
         // Check if cBox and cBoxT are not null
         if (emp != null && cBoxTValue != null) {
             if (cBoxTValue.equals("Bon Entrée")) {
+                if(heure!=null){
                 String type = "E";
                 char etatbon = 'V';
-                Bon bon = new Bon(BonService.getNextCodeBon(), emp, type, LocalDate.now(), LocalTime.now(), LocalTime.now(), motifText.getText(), etatbon);
+                Bon bon = new Bon(BonService.getNextCodeBon(), emp, type, LocalDate.now(), LocalTime.now(), heure.getValue(), motifText.getText(), etatbon);
                 // Add code to use bon as needed
                 BonService.saveBon(bon, emp);
                 BonService.pointageValidate(CalculatorCheck.fullDigit(String.valueOf(bon.getCodeBon())));
                 refreshtable();
-
+                }
             } else if (cBoxTValue.equals("Bon Sortie")) {
                 String type = "S";
                 char etatbon = 'N';
@@ -176,6 +211,7 @@ public class FXMLDocumentController implements Initializable {
         motifText.setText("");
         cBox.setValue(null);
         cBoxT.setValue(null);
+        heure.setValue(null);
 
     }
 
@@ -195,7 +231,6 @@ public class FXMLDocumentController implements Initializable {
         Connectdb();
         cBox.setOnAction(event -> {
             // Code to execute when the ComboBox selection changes
-            if(cBox.getSelectionModel().getSelectedItem()==null) return;
             Employe selectedItem = cBox.getSelectionModel().getSelectedItem();
             empNumField.setText(String.valueOf(selectedItem.getCodeEmploye()));
             empNumField.setEditable(false);
@@ -205,6 +240,8 @@ public class FXMLDocumentController implements Initializable {
         });
 
         // TODO
+        heure.setVisible(false);
+        heureLabel.setVisible(false);
         accPan.setVisible(true);
         accPan.setDisable(false);
         sorPan.setVisible(false);
