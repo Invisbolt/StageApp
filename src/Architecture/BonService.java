@@ -107,9 +107,13 @@ public class BonService {
             JOptionPane.showMessageDialog(null, "Entrer un numero valide");
             return;
         }
-        num=String.format("%013d", Integer.parseInt(num));
+        num = String.format("%013d", Integer.parseInt(num));
         Integer codeb = Integer.valueOf(num.substring(0, num.length() - 1));
         Bon bon = getBonByCode(codeb);
+        if (bon == null) {
+            JOptionPane.showMessageDialog(null,"Entrer un numero valide");
+            return;
+        }
 
         String sql = "INSERT INTO pointages (date_pointage, code_employe, type_pointage, heure) VALUES (?, ?, ?, ?)";
         LocalDate datePointage = LocalDate.now();

@@ -125,7 +125,7 @@ public class PDFUtil {
         try {
 
             if (bon.getType_bon().equals("E")) {
-                makePDF(emp, bon, R.BARCODE_DIR, R.bonEntre());
+                makePDF(emp, bon, null, R.bonEntre());
             } else {
                 makePDF(emp, bon, R.BARCODE_DIR, R.bonSStream());
             }

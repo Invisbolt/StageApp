@@ -197,19 +197,21 @@ public class FXMLDocumentController implements Initializable {
             }
         });
         Connectdb();
+        cBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+
+        });
         cBox.setOnAction(event -> {
             // Code to execute when the ComboBox selection changes
             if (cBox.getSelectionModel().getSelectedItem() == null) {
                 return;
             }
-            Employe selectedItem = cBox.getSelectionModel().getSelectedItem();
+            Employe selectedItem = cBox.getValue();
             empNumField.setText(String.valueOf(selectedItem.getCodeEmploye()));
             empNumField.setEditable(false);
         });
         cBoxB.setOnAction(e -> {
             filterBonsBySelectedOption();
         });
-        cBox.setEditable(true);
         cBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 ArrayList<Employe> filteredItems = new ArrayList<>();
@@ -372,9 +374,12 @@ public class FXMLDocumentController implements Initializable {
     }
 
     private void handleRowDoubleClick(Bon selectedBon) throws URISyntaxException, WriterException, IOException {
-        if(selectedBon.getType_bon().equals("E"))PDFUtil.makePDF(selectedBon.getEmploye(), selectedBon, null, R.bonEntre());
-        else PDFUtil.makePDF(selectedBon.getEmploye(), selectedBon, null, R.bonSStream());
-        
+        if (selectedBon.getType_bon().equals("E")) {
+            PDFUtil.makePDF(selectedBon.getEmploye(), selectedBon, null, R.bonEntre());
+        } else {
+            PDFUtil.makePDF(selectedBon.getEmploye(), selectedBon, null, R.bonSStream());
+        }
+
     }
 
 }

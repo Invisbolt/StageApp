@@ -88,7 +88,7 @@ public class LoginPageController implements Initializable {
         // Check if username or password is empty
         if (username.isEmpty() || password.isEmpty()) {
             // If either field is empty, display a message
-            showAlert("Error", "Please fill in both username and password fields.", AlertType.ERROR);
+            showAlert("Error", "Veillez remplir tous les champs!!.", AlertType.ERROR);
             return;
         }
 
@@ -123,7 +123,7 @@ public class LoginPageController implements Initializable {
 
             } else {
                 // User doesn't exist, display an error message
-                showAlert("Error", "User does not exist. Please check your credentials.", AlertType.ERROR);
+                showAlert("Error", "Nom utilisateur ou motdepass incorrect!!.", AlertType.ERROR);
             }
 
             // Close the ResultSet, PreparedStatement, and database connection
